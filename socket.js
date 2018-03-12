@@ -4,19 +4,25 @@ const socketio = (server) => {
   var io = _socket.listen(server);
   io.on('connection', function(socket) {
     console.log('a user connected');
-    setTimeout(() => {
-      socket.emit('newChart', 'This is a new chart.')
-    }, 3000);
-    socket.on('newChart', (data) => {
-      io.sockets.emit('newChart', data)
-    })
+    socket.on('identify by id', (id) => {
+      console.log(`This socket is in room-${id}`);
+      socket.join(id, () => {
+        console.log('rooms', socket.rooms)
+        socket.on('update lottery data', (data) => {
+          io.to(id).emit('updateData', 'Lottery data has update!')
+        })
+      });
+      setTimeout(() => {
+        io.to(id).emit('identifyById', id)
+      }, 2000);      
+    });
+    socket.on('leave room by id', (id) => {
+      socket.leaveAll()
+    });
     socket.on('disconnect', () => {
       console.log('a user disconnected')
     })
-  })
-  setTimeout(() => {
-    io.sockets.emit('refresh', 'All client refresh.')
-  }, 10000);
+  });
 }
 
 module.exports = socketio;

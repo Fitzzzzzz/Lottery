@@ -1,5 +1,7 @@
 <template>
   <div>
+    <h1>{{ temMsg }}</h1>
+    <button @click="updateData">UPDATE</button>
     <div class="echarts" id="echarts-dom"></div>
   </div>
 </template>
@@ -12,12 +14,27 @@
     ],
     mounted () {
       console.log('IEcharts load')
-      console.log(this.option)
       let echartsDOM = document.getElementById('echarts-dom')
       let iEcharts = echarts.init(echartsDOM)
       this.$echartsDOM = iEcharts
       iEcharts.setOption(this.option)
-      // this.changeData()
+      this.changeData()
+      this.$socket.emit('identify by id', this.$route.query.id)
+    },
+    beforeDestroy () {
+      this.$socket.emit('leave room by id', this.$route.query.id)
+    },
+    sockets: {
+      connect: () => {
+        console.log('Socket is connected.')
+      },
+      identifyById: function (msg) {
+        this.temMsg = msg
+        console.log('recived id msg')
+      },
+      updateData: function (data) {
+        this.temMsg = data
+      }
     },
     methods: {
       changeData () {
@@ -31,6 +48,14 @@
           }]
         })
         setTimeout(this.changeData, 2000)
+      },
+      updateData () {
+        this.$socket.emit('update lottery data')
+      }
+    },
+    data () {
+      return {
+        temMsg: 'MSG'
       }
     }
   }
