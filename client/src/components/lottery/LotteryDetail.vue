@@ -2,20 +2,18 @@
   <div>
     <div v-if="loadEcharts">
       <card :header="{ title: '投票结果' }">
-        <IEcharts :option="option" slot="content"></IEcharts>
+        <IEcharts :option="option" slot="content" :config="config"></IEcharts>
       </card>
-      <divider>--</divider>
     </div>
   </div>
 </template>
 
 <script>
 import IEcharts from '@/components/echarts/IEcharts'
-import { Divider, Card } from 'vux'
+import { Card } from 'vux'
 export default {
   components: {
     IEcharts,
-    Divider,
     Card
   },
   mounted () {
@@ -40,12 +38,14 @@ export default {
         }]
       }
       Object.assign(this.option, option)
+      Object.assign(this.config, data[0].config)
       this.loadEcharts = true
     })
   },
   data () {
     return {
       option: {},
+      config: {},
       loadEcharts: false
     }
   }
