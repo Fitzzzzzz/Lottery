@@ -14,14 +14,15 @@ const socketio = (server) => {
         socket.on('identify by id', (id) => {
           console.log(`This socket is in room-${id}`);
           socket.join(id, () => {
-            console.log('rooms', socket.rooms);
+            console.log('rooms:', socket.rooms);
             socket.room = socket.rooms[Object.keys(socket.rooms)[0]]
+            console.log('room:', socket.room)
           });
           setTimeout(() => {
-            io.to(id).emit('identifyById', id)
+            io.to(id).emit('identifyById', id);
           }, 2000);      
         });
-        socket.on('update lottery data', function (data) {
+        socket.on('update data', function (data) {
           (async () => {
             let list = await lotteryCol.find({ _id: ObjectID(socket.room) }).toArray();
             let newList = list[0].list;
@@ -33,16 +34,17 @@ const socketio = (server) => {
                 list: newList
               }
             })
-            io.to(socket.room).emit('updateData', newList)
+            io.to(socket.room).emit('updateData', newList);
           })();
         })
         socket.on('leave room by id', (id) => {
-          socket.leaveAll()
+          socket.leaveAll();
           console.log('socket leave room id ', id);
-          console.log(socket.rooms)
+          console.log(socket.rooms);
         });
         socket.on('disconnect', () => {
-          console.log('a user disconnected')
+          console.log('a user disconnected');
+          db.close();
         })
       });
     })()

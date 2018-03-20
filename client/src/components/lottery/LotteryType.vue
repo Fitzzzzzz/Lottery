@@ -37,7 +37,7 @@
       <x-button text="确定" type="primary" @click.native="pushSelectItem"></x-button>
     </x-dialog>
     <alert v-model="showResult" title="投票创建成功">
-      投票地址为 {{ lotteryURL }}
+      投票地址为 :
       <vue-qr :text="lotteryURL" :size="250"></vue-qr>
     </alert>
   </div>
@@ -115,7 +115,7 @@
         body.username = this.$store.state.clientUserName
         this.$http.post('/api/addLottery', body).then(response => {
           if (response.data.errorcode === 0) {
-            this.lotteryURL = response.data.msg.insertedIds[0]
+            this.lotteryURL = `http://0.0.0.0:8080/#/detail?id=${response.data.msg.insertedIds[0]}`
             this.showResult = true
           }
         })

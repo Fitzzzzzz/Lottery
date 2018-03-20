@@ -156,6 +156,29 @@ const getLotteryDetail = async (req, res) => {
   }
 }
 
+const closeLottery = async (req, res) => {
+  const db = req.db, body = req.body;
+  const LotteryId = body.id;
+  try {
+    let lotteryCol = await db.collection(mongoEnv.dbInfo.lotteryCol);
+    let setCloseCount = await lotteryCol.updateOne({ _id: ObjectID(LotteryId) }, {
+      $set: {
+        status: 'close'
+      }
+    })
+    assert(1, setCloseCount.upsertedCount);
+    res.send({
+      errorcode: 0,
+      msg: '关闭成功'
+    });
+    db.close();
+  } catch (error) {
+    console.log(error.stack);
+    res.status(500).end();
+    db.colse();
+  }
+}
+
 router.get('/signin', (req, res) => {
   signin(req, res);
 });
@@ -174,6 +197,10 @@ router.get('/myCreateLottery', (req, res) => {
 
 router.get('/getLotteryDetail', (req, res) => {
   getLotteryDetail(req, res);
+})
+
+router.post('/closeLottery', (req, res) => {
+  closeLottery(req, res);
 })
 
 module.exports = router;

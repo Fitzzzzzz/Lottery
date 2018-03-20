@@ -5,7 +5,7 @@
         header-label="状态" 
         :header-value="item.status | itemChineseFilter" 
         :body-items="[{ label: '标题', value: item.config.title }, { label: '参与人数', value: item.list.length}]" 
-        :footer-buttons="buttons"
+        :footer-buttons="formFooterButtons"
         :name="item._id">
       </form-preview>
     </group>
@@ -33,12 +33,19 @@ export default {
   },
   data () {
     return {
-      buttons: [
+      items: [],
+      currentURL: '',
+      showURLQr: false
+    }
+  },
+  computed: {
+    formFooterButtons () {
+      let buttons = [
         {
           style: 'default',
           text: '查看投票地址',
           onButtonClick: (name) => {
-            this.currentURL = name
+            this.currentURL = `http://0.0.0.0:8080/#/detail?id=${name}`
             this.showURLQr = true
           }
         }, {
@@ -48,10 +55,19 @@ export default {
             this.$router.push({ path: 'detail', query: { id: name } })
           }
         }
-      ],
-      items: [],
-      currentURL: '',
-      showURLQr: false
+      ]
+      if (this.$route.query.type === 'create') {
+        buttons.push({
+          style: 'color: red',
+          text: '结束投票',
+          onButtonClick: (name) => {
+            this.$http.post('/api/closeLottery', { id: name }).then(response => {
+              console.log(response.data)
+            })
+          }
+        })
+      }
+      return buttons
     }
   },
   mounted () {

@@ -2,7 +2,7 @@
   <div>
     <div v-if="loadEcharts">
       <card :header="{ title: '投票结果' }">
-        <IEcharts :option="option" slot="content" :config="config"></IEcharts>
+        <IEcharts :option="option" slot="content" :config="config" :lotteryStatus="lotteryStatus"></IEcharts>
       </card>
     </div>
   </div>
@@ -39,6 +39,7 @@ export default {
       }
       Object.assign(this.option, option)
       Object.assign(this.config, data[0].config)
+      this.lotteryStatus = data[0].status
       this.loadEcharts = true
     })
   },
@@ -46,7 +47,8 @@ export default {
     return {
       option: {},
       config: {},
-      loadEcharts: false
+      loadEcharts: false,
+      lotteryStatus: ''
     }
   }
 }
