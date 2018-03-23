@@ -30,7 +30,7 @@
           username: this.username,
           password: this.$md5(this.password)
         }
-        let promise = await this.$http.post('/api/signup', body)
+        let promise = await this.$http.post('/api/user/signup', body)
         let data = promise.data
         if (data.errorcode === 0) {
           this.$router.push('signin')

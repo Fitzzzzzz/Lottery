@@ -1,18 +1,21 @@
 <template>
   <div>
-    <div class="echarts" id="echarts-dom"></div>
-    <div v-if="lotteryStatus !== 'close'">
-      <divider>下方投票 ({{checkerType | checkerTypeFilter}})</divider>
-      <checker
-      v-model="selectedAns"
-      :type="checkerType"
-      default-item-class="selected-item"
-      selected-item-class="selected-item-selected"
-      >
-        <checker-item v-for="(item, index) in option.xAxis.data" :key="index" :value="index">{{item}}</checker-item>
-      </checker>
-      <x-button type="primary" @click.native="submitData">投票</x-button>
-      <x-dialog :show="!this.$store.state.isLogIn">
+    <div v-if="this.$store.state.isLogIn">
+      <div class="echarts" id="echarts-dom"></div>
+      <div v-if="lotteryStatus !== 'close'">
+        <divider>下方投票 ({{checkerType | checkerTypeFilter}})</divider>
+        <checker
+        v-model="selectedAns"
+        :type="checkerType"
+        default-item-class="selected-item"
+        selected-item-class="selected-item-selected"
+        >
+          <checker-item v-for="(item, index) in option.xAxis.data" :key="index" :value="index">{{item}}</checker-item>
+        </checker>
+        <x-button type="primary" @click.native="submitData">投票</x-button>      
+      </div>
+    </div>
+    <x-dialog :show="!this.$store.state.isLogIn">
         <card :header="{title: '登陆了吗？'}" class="card">
           <div slot="content">
             <span class="span">先去登陆吧</span>
@@ -20,7 +23,6 @@
           </div>
         </card>        
       </x-dialog>
-    </div>
   </div>
 </template>
 
@@ -85,7 +87,11 @@
         }
         let body = {}
         body.newData = newData
-        this.$socket.emit('update data', body)
+        this.$http.post('/api/user/insertLottery', { username: this.$store.state.clientUserName, id: this.$route.query.id }).then(response => {
+          if (response.data.errorcode === 0) {
+            this.$socket.emit('update data', body)
+          }
+        })
       }
     },
     data () {

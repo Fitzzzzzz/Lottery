@@ -17,7 +17,6 @@ const signin = async (req, res) => {
   try {
     col = await db.collection(mongoEnv.dbInfo.userCol);
     docs = await col.find({username: username}).toArray();
-    db.close();
     if (docs.length === 0) {
       return res.send({
         errorcode: 2,
@@ -31,6 +30,11 @@ const signin = async (req, res) => {
       errorcode: 3,
       msg: '密码错误'
     }
+    let lastSignInTime = await col.updateOne({ username: username }, {
+      $set: {
+        lastSignInTime: new Date().getTime()
+      }
+    })
     db.close()
     res.send(result);
   } catch (error) {
@@ -60,9 +64,11 @@ const signup = async (req, res) => {
     }
     let rowCheck = await col.insert({
       username: username,
-      password: md5(password)
+      password: md5(password),
+      createLotterys: [],
+      joinLotterys: [],
+      singUpTime: new Date().getTime()
     });
-    db.close()
     assert.equal(1, rowCheck.insertedCount);
     let result = rowCheck.insertedCount === 1 ? {
       errorcode: 0,
@@ -85,7 +91,8 @@ const addLottery = async (req, res) => {
   let obj = body.obj, username = body.username;
   try {
     let col = await db.collection(mongoEnv.dbInfo.lotteryCol);
-    obj.status = 'in-process'
+    obj.status = 'in-process';
+    obj.createTime = new Date().getTime();
     let insertDoc = await col.insert(obj);
     assert(1, insertDoc.insertedCount);
     let userCol = await db.collection(mongoEnv.dbInfo.userCol);
@@ -113,7 +120,7 @@ const addLottery = async (req, res) => {
   }
 }
 
-const myCreateLottery = async (req, res) => {
+const getMyLottery = async (req, res, type) => {
   const db = req.db, query = req.query;
   const username = query.username;
   try {
@@ -123,9 +130,15 @@ const myCreateLottery = async (req, res) => {
       res.status(404).end();
       return;
     }
-    let queryId = userInfo[0].createLotterys.map(item => ObjectID(item));
-    let lotteryCol = await db.collection(mongoEnv.dbInfo.lotteryCol);
-    let myLottery = await lotteryCol.find({ _id: { $in: queryId } }).toArray();
+    let queryId;
+    queryId = type === 'create' ? userInfo[0].createLotterys.map(item => ObjectID(item)) : userInfo[0].joinLotterys.map(item => ObjectID(item));
+    let myLottery;
+    if (queryId) {
+      let lotteryCol = await db.collection(mongoEnv.dbInfo.lotteryCol);
+      myLottery = await lotteryCol.find({ _id: { $in: queryId } }).toArray();
+    } else {
+      myLottery = []
+    }
     db.close();
     res.send(myLottery);
   } catch (error) {
@@ -163,7 +176,8 @@ const closeLottery = async (req, res) => {
     let lotteryCol = await db.collection(mongoEnv.dbInfo.lotteryCol);
     let setCloseCount = await lotteryCol.updateOne({ _id: ObjectID(LotteryId) }, {
       $set: {
-        status: 'close'
+        status: 'close',
+        closeTime: new Date().getTime()
       }
     })
     assert(1, setCloseCount.upsertedCount);
@@ -179,28 +193,59 @@ const closeLottery = async (req, res) => {
   }
 }
 
-router.get('/signin', (req, res) => {
+const insertLottery = async (req, res) => {
+  const db = req.db, body = req.body;
+  const username = body.username, id = body.id
+  try {
+    let userCol = await db.collection(mongoEnv.dbInfo.userCol);
+    let userInfo = await userCol.find({ username: username }).toArray();
+    userInfo[0].joinLotterys.push(id);
+    let insertLotteryId = userCol.updateOne({ username: username }, {
+      $set: {
+        joinLotterys: userInfo[0].joinLotterys
+      }
+    });
+    assert(1, insertLotteryId.insertedCount);
+    res.send({
+      errorcode: 0,
+      msg: ''
+    });
+  } catch (error) {
+    console.log(error.stack);
+    res.status(500).end();
+    db.close();
+  }
+}
+
+router.get('/user/signin', (req, res) => {
   signin(req, res);
 });
 
-router.post('/signup', (req, res) => {
+router.post('/user/signup', (req, res) => {
   signup(req, res);
 });
 
-router.post('/addLottery', (req, res) => {
+router.post('/lottery/addLottery', (req, res) => {
   addLottery(req, res);
 })
 
-router.get('/myCreateLottery', (req, res) => {
-  myCreateLottery(req, res);
+router.get('/user/myCreateLottery', (req, res) => {
+  getMyLottery(req, res, type = 'create');
 })
 
-router.get('/getLotteryDetail', (req, res) => {
+router.get('/lottery/getLotteryDetail', (req, res) => {
   getLotteryDetail(req, res);
 })
 
-router.post('/closeLottery', (req, res) => {
+router.post('/lottery/closeLottery', (req, res) => {
   closeLottery(req, res);
 })
 
+router.post('/user/insertLottery', (req, res) => {
+  insertLottery(req, res)
+})
+
+router.get('/user/myJoinLottery', (req, res) => {
+  getMyLottery(req, res, type = 'join')
+})
 module.exports = router;

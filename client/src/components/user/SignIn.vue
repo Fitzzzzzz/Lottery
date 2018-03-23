@@ -29,7 +29,7 @@
         window.alert('66')
       },
       signIn () {
-        this.$http.get(`/api/signin?username=${this.username}&password=${this.$md5(this.password)}`).then(response => {
+        this.$http.get(`/api/user/signin?username=${this.username}&password=${this.$md5(this.password)}`).then(response => {
           if (response.data.errorcode === 0) {
             this.$store.commit('setClientUserName', { clientUserName: this.username })
             this.$store.commit('logIn', { isLogIn: true })

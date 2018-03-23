@@ -113,7 +113,7 @@
         obj.list = new Array(this.selectItems.length).fill(0)
         body.obj = obj
         body.username = this.$store.state.clientUserName
-        this.$http.post('/api/addLottery', body).then(response => {
+        this.$http.post('/api/lottery/addLottery', body).then(response => {
           if (response.data.errorcode === 0) {
             this.lotteryURL = `http://0.0.0.0:8080/#/detail?id=${response.data.msg.insertedIds[0]}`
             this.showResult = true

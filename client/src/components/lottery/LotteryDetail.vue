@@ -17,7 +17,7 @@ export default {
     Card
   },
   mounted () {
-    this.$http.get(`/api/getLotteryDetail?id=${this.$route.query.id}`).then(response => {
+    this.$http.get(`/api/lottery/getLotteryDetail?id=${this.$route.query.id}`).then(response => {
       let data = response.data
       let option = {
         title: {

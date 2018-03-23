@@ -61,7 +61,7 @@ export default {
           style: 'color: red',
           text: '结束投票',
           onButtonClick: (name) => {
-            this.$http.post('/api/closeLottery', { id: name }).then(response => {
+            this.$http.post('/api/lottery/closeLottery', { id: name }).then(response => {
               console.log(response.data)
             })
           }
@@ -72,7 +72,11 @@ export default {
   },
   mounted () {
     if (this.$route.query.type === 'create') {
-      this.$http.get(`/api/myCreateLottery?username=${this.$store.state.clientUserName}`).then(response => {
+      this.$http.get(`/api/user/myCreateLottery?username=${this.$store.state.clientUserName}`).then(response => {
+        this.items = response.data
+      })
+    } else {
+      this.$http.get(`/api/user/myJoinLottery?username=${this.$store.state.clientUserName}`).then(response => {
         this.items = response.data
       })
     }
