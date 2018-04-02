@@ -94,7 +94,7 @@ const addLottery = async (req, res) => {
     obj.status = 'in-process';
     obj.createTime = new Date().getTime();
     let insertDoc = await col.insert(obj);
-    assert(1, insertDoc.insertedCount);
+    assert.equal(1, insertDoc.insertedCount);
     let userCol = await db.collection(mongoEnv.dbInfo.userCol);
     let createLotterys = await userCol.find({ username: username }).toArray()
     createLotterys[0].createLotterys.push(insertDoc.insertedIds[0]);
@@ -103,7 +103,6 @@ const addLottery = async (req, res) => {
         createLotterys: createLotterys[0].createLotterys
       }
     });
-    assert(1, updateDoc.upsertedCount);
     let result = insertDoc.insertedCount === 1 ? {
       errorcode: 0,
       msg: insertDoc
@@ -131,7 +130,7 @@ const getMyLottery = async (req, res, type) => {
       return;
     }
     let queryId;
-    queryId = type === 'create' ? userInfo[0].createLotterys.map(item => ObjectID(item)) : userInfo[0].joinLotterys.map(item => ObjectID(item));
+    queryId = type === 'create' ? userInfo[0].createLotterys.map(item => ObjectID(item)) : userInfo[0].joinLotterys.map(item => ObjectID(item.id));
     let myLottery;
     if (queryId) {
       let lotteryCol = await db.collection(mongoEnv.dbInfo.lotteryCol);
@@ -180,7 +179,6 @@ const closeLottery = async (req, res) => {
         closeTime: new Date().getTime()
       }
     })
-    assert(1, setCloseCount.upsertedCount);
     res.send({
       errorcode: 0,
       msg: '关闭成功'
@@ -195,17 +193,20 @@ const closeLottery = async (req, res) => {
 
 const insertLottery = async (req, res) => {
   const db = req.db, body = req.body;
-  const username = body.username, id = body.id
+  const username = body.username, id = body.id, result = body.result;
   try {
     let userCol = await db.collection(mongoEnv.dbInfo.userCol);
     let userInfo = await userCol.find({ username: username }).toArray();
-    userInfo[0].joinLotterys.push(id);
-    let insertLotteryId = userCol.updateOne({ username: username }, {
+    userInfo[0].joinLotterys.push({
+      id: id,
+      joinTime: new Date().getTime(),
+      result: result
+    });
+    let insertLotteryId = await userCol.updateOne({ username: username }, {
       $set: {
         joinLotterys: userInfo[0].joinLotterys
       }
     });
-    assert(1, insertLotteryId.insertedCount);
     res.send({
       errorcode: 0,
       msg: ''

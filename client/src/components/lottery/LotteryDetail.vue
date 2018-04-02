@@ -25,7 +25,7 @@ export default {
         },
         tooltip: {},
         legend: {
-          data: ['数量']
+          data: ['数量', '我的选择']
         },
         xAxis: {
           data: data[0].config.xAxis
@@ -33,6 +33,11 @@ export default {
         yAxis: {},
         series: [{
           name: '数量',
+          type: data[0].config.eChartsType,
+          data: data[0].list
+        }, {
+          name: '我的选择',
+          barGap: '-100%',
           type: data[0].config.eChartsType,
           data: data[0].list
         }]

@@ -68,9 +68,16 @@
     },
     methods: {
       changeData (data) {
+        let myChoice = new Array(data.length).fill(0)
+        myChoice[this.selectedAns] = data[this.selectedAns]
         this.$echartsDOM.setOption({
           series: [{
+            type: this.config.eChartsType,
             data: data
+          }, {
+            z: 20,
+            type: this.config.eChartsType,
+            data: myChoice
           }]
         })
       },
@@ -87,7 +94,7 @@
         }
         let body = {}
         body.newData = newData
-        this.$http.post('/api/user/insertLottery', { username: this.$store.state.clientUserName, id: this.$route.query.id }).then(response => {
+        this.$http.post('/api/user/insertLottery', { username: this.$store.state.clientUserName, id: this.$route.query.id, result: newData }).then(response => {
           if (response.data.errorcode === 0) {
             this.$socket.emit('update data', body)
           }

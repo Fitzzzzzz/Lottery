@@ -10,7 +10,7 @@ import { AjaxPlugin, md5, ToastPlugin } from 'vux'
 import VueSocketIo from 'vue-socket.io'
 
 Vue.prototype.$md5 = md5
-Vue.use(VueSocketIo, 'http://0.0.0.0:3000')
+Vue.use(VueSocketIo, `http://${document.domain}:3000`)
 Vue.use(AjaxPlugin)
 Vue.use(ToastPlugin)
 Vue.use(Vuex)
