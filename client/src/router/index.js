@@ -60,7 +60,7 @@ router.beforeEach((to, from, next) => {
     case 'UserCenter' :
       if (!store.state.isLogIn) {
         next('signin')
-        break
+        return
       }
       store.commit('setAppPath', { path: '个人中心' })
       break

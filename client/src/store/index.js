@@ -9,7 +9,13 @@ const store = new Vuex.Store({
     appPath: 'Lottery',
     isLogIn: false,
     clientUserName: '',
-    entryPath: ''
+    entryPath: '',
+    myJoinLottery: []
+  },
+  getters: {
+    didIJoin: (state) => (id) => {
+      return state.myJoinLottery.some(item => item === id)
+    }
   },
   mutations: {
     setAppPath (state, {path}) {
@@ -26,6 +32,9 @@ const store = new Vuex.Store({
     },
     setEntryPath (state, {entryPath}) {
       state.entryPath = entryPath
+    },
+    setMyJoinLottery (state, {myJoinLottery}) {
+      state.myJoinLottery = [...myJoinLottery]
     }
   },
   actions: {

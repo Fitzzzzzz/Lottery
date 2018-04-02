@@ -2,7 +2,7 @@
   <div>
     <div v-if="this.$store.state.isLogIn">
       <div class="echarts" id="echarts-dom"></div>
-      <div v-if="lotteryStatus !== 'close'">
+      <div v-if="lotteryStatus !== 'close' && !didIJoin">
         <divider>下方投票 ({{checkerType | checkerTypeFilter}})</divider>
         <checker
         v-model="selectedAns"
@@ -113,6 +113,11 @@
       checkerTypeFilter: (value) => {
         if (!value) return ''
         return value === 'radio' ? '单选' : '多选'
+      }
+    },
+    computed: {
+      didIJoin () {
+        return this.$store.getters.didIJoin(this.$route.query.id)
       }
     }
   }

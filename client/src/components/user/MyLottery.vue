@@ -78,6 +78,8 @@ export default {
     } else {
       this.$http.get(`/api/user/myJoinLottery?username=${this.$store.state.clientUserName}`).then(response => {
         this.items = response.data
+        let ids = this.items.map(item => item._id)
+        this.$store.commit('setMyJoinLottery', {myJoinLottery: ids})
       })
     }
   }
