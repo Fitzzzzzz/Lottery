@@ -6,13 +6,14 @@ import App from './App'
 import router from './router'
 import store from './store'
 import Vuex from 'Vuex'
-import { AjaxPlugin, md5, ToastPlugin } from 'vux'
+import { AjaxPlugin, md5, ToastPlugin, LoadingPlugin } from 'vux'
 import VueSocketIo from 'vue-socket.io'
 
 Vue.prototype.$md5 = md5
 Vue.use(VueSocketIo, `http://${document.domain}:3000`)
 Vue.use(AjaxPlugin)
 Vue.use(ToastPlugin)
+Vue.use(LoadingPlugin)
 Vue.use(Vuex)
 
 FastClick.attach(document.body)

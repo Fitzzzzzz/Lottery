@@ -10,7 +10,8 @@ const store = new Vuex.Store({
     isLogIn: false,
     clientUserName: '',
     entryPath: '',
-    myJoinLottery: []
+    myJoinLottery: [],
+    preHref: ''
   },
   getters: {
     didIJoin: (state) => (id) => {
@@ -35,6 +36,9 @@ const store = new Vuex.Store({
     },
     setMyJoinLottery (state, {myJoinLottery}) {
       state.myJoinLottery = [...myJoinLottery]
+    },
+    setPreHref (state, {preHref}) {
+      state.preHref = preHref
     }
   },
   actions: {

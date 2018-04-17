@@ -38,6 +38,9 @@
             } else {
               this.$router.push('profile')
             }
+            if (this.$store.state.preHref.length) {
+              window.location.href = this.$store.state.preHref
+            }
           } else if (response.data.errorcode === 2) {
             this.$vux.toast.show({
               text: '用户不存在',

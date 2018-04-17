@@ -44,7 +44,7 @@ const socketio = (server) => {
         });
         socket.on('disconnect', () => {
           console.log('a user disconnected');
-          db.close();
+          // db.close();
         })
       });
     })()

@@ -31,8 +31,8 @@
       v-model="showDialog"
       :dialog-style="{'padding': '20px'}"
       hide-on-blur>
-      <group title="添加备选项">
-        <x-input v-model="selectItem" title="备选项：" label-width="80px" novalidate :show-clear="false" placeholder-align="right"></x-input>
+      <group>
+        <x-input v-model="selectItem" title="备选项：" label-width="80px" novalidate placeholder-align="right" @on-enter="pushSelectItem"></x-input>
       </group>
       <x-button text="确定" type="primary" @click.native="pushSelectItem"></x-button>
     </x-dialog>
@@ -115,7 +115,7 @@
         body.username = this.$store.state.clientUserName
         this.$http.post('/api/lottery/addLottery', body).then(response => {
           if (response.data.errorcode === 0) {
-            this.lotteryURL = `http://0.0.0.0:8080/#/detail?id=${response.data.msg.insertedIds[0]}`
+            this.lotteryURL = `http://${window.location.host}/#/detail?id=${response.data.msg.insertedIds[0]}`
             this.showResult = true
           }
         })

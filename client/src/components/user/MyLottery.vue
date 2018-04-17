@@ -45,7 +45,7 @@ export default {
           style: 'default',
           text: '查看投票地址',
           onButtonClick: (name) => {
-            this.currentURL = `http://0.0.0.0:8080/#/detail?id=${name}`
+            this.currentURL = `http://${window.location.host}/#/detail?id=${name}`
             this.showURLQr = true
           }
         }, {

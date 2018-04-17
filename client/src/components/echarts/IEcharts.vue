@@ -44,12 +44,16 @@
       'lotteryStatus'
     ],
     mounted () {
-      this.checkerType = this.config.selectType === 'single' ? 'radio' : 'checkbox'
-      let echartsDOM = document.getElementById('echarts-dom')
-      let iEcharts = echarts.init(echartsDOM)
-      this.$echartsDOM = iEcharts
-      iEcharts.setOption(this.option)
-      this.$socket.emit('identify by id', this.$route.query.id)
+      if (!this.$store.state.isLogIn) {
+        this.$store.commit('setPreHref', {preHref: document.location.href})
+      } else {
+        this.checkerType = this.config.selectType === 'single' ? 'radio' : 'checkbox'
+        let echartsDOM = document.getElementById('echarts-dom')
+        let iEcharts = echarts.init(echartsDOM)
+        this.$echartsDOM = iEcharts
+        iEcharts.setOption(this.option)
+        this.$socket.emit('identify by id', this.$route.query.id)
+      }
     },
     beforeDestroy () {
       this.$socket.emit('leave room by id', this.$route.query.id)

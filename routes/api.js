@@ -35,11 +35,11 @@ const signin = async (req, res) => {
         lastSignInTime: new Date().getTime()
       }
     })
-    db.close()
+    // db.close()
     res.send(result);
   } catch (error) {
     console.log(error.stack);
-    db.close();
+    // db.close();
     res.status(500).end()
   }
 }
@@ -77,11 +77,11 @@ const signup = async (req, res) => {
       errorcode: 3,
       msg: '系统故障'
     }
-    db.close()
+    // db.close()
     res.send(result)
   } catch (error) {
     console.log(error.stack);
-    db.close()
+    // db.close()
     res.status(500).end()
   }
 }
@@ -110,11 +110,11 @@ const addLottery = async (req, res) => {
       errorcode: 1,
       msg: '系统故障'
     };
-    db.close()
+    // db.close()
     res.send(result);
   } catch (error) {
     console.log(error.stack);
-    db.close();
+    // db.close();
     res.status(500).end();
   }
 }
@@ -138,11 +138,11 @@ const getMyLottery = async (req, res, type) => {
     } else {
       myLottery = []
     }
-    db.close();
+    // db.close();
     res.send(myLottery);
   } catch (error) {
     console.log(error.stack)
-    db.close()
+    // db.close()
     res.status(500).end()
   }
 }
@@ -159,11 +159,11 @@ const getLotteryDetail = async (req, res) => {
       });
       return
     }
-    db.close();
+    // db.close();
     res.send(lotteryDetail);
   } catch (error) {
     console.log(error.stack);
-    db.close();
+    // db.close();
     res.status(500).end();
   }
 }
@@ -183,7 +183,7 @@ const closeLottery = async (req, res) => {
       errorcode: 0,
       msg: '关闭成功'
     });
-    db.close();
+    // db.close();
   } catch (error) {
     console.log(error.stack);
     res.status(500).end();
@@ -214,7 +214,7 @@ const insertLottery = async (req, res) => {
   } catch (error) {
     console.log(error.stack);
     res.status(500).end();
-    db.close();
+    // db.close();
   }
 }
 
